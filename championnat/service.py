@@ -42,9 +42,9 @@ def games_per_league(league):
 
         awayTeam = model_to_dict(game.awayTeam)
         awayTeam['image']=game.awayTeam.image.url
-        del tmp['awayTeam']['id']
         awayTeam['league']=game.league.name
         tmp['awayTeam']=awayTeam
+        del tmp['awayTeam']['id']
         ret.append(tmp)
     return ret
 
@@ -66,9 +66,9 @@ def live_games():
 
         awayTeam = model_to_dict(game.awayTeam)
         awayTeam['image'] = game.awayTeam.image.url
-        del tmp['awayTeam']['id']
         awayTeam['league'] = game.league.name
         tmp['awayTeam'] = awayTeam
+        del tmp['awayTeam']['id']
         ret.append(tmp)
     return ret
 
