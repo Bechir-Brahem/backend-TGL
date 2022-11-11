@@ -18,8 +18,8 @@ def games_for_all_leagues(limit=5):
         league_name = league.name
         objects = Game.objects.filter(league=league).values('homeTeam__name', 'homeTeam__image', 'awayTeam__name',
                                                             'awayTeam__image'
-                                                            , 'awayTeamScore', 'homeTeamScore', 'startTime',
-                                                            'endTime')[:limit]
+                                                            , 'awayTeamScore', 'homeTeamScore', 'startDate',
+                                                            'endDate')[:limit]
         ret[league_name] = list(objects)
     return ret
 
@@ -54,8 +54,8 @@ from django.forms.models import model_to_dict
 def live_games():
     ret = []
     a= Game.objects.filter(
-        endTime__gte=datetime.now(),
-        startTime__lte=datetime.now()
+        endDate__gte=datetime.now(),
+        startDate__lte=datetime.now()
     ).select_related('league','homeTeam','awayTeam').all()
     for game in a:
         tmp = model_to_dict(game)
