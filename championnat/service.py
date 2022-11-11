@@ -35,6 +35,7 @@ def games_per_league(league):
         tmp=model_to_dict(game)
         del tmp['id']
         tmp['league']=game.league.name
+        del tmp['league']
         homeTeam = model_to_dict(game.homeTeam)
         homeTeam['image']=game.homeTeam.image.url
         homeTeam['league']=game.league.name
@@ -58,9 +59,11 @@ def live_games():
         startDate__lte=datetime.now()
     ).select_related('league','homeTeam','awayTeam').all()
     for game in a:
+
         tmp = model_to_dict(game)
         del tmp['id']
         tmp['league'] = game.league.name
+        del tmp['league']
         homeTeam = model_to_dict(game.homeTeam)
         homeTeam['image'] = game.homeTeam.image.url
         homeTeam['league'] = game.league.name
