@@ -1,8 +1,9 @@
 from django.contrib import admin
-from .models import Game, Team
+from .models import Game, Team,League
 
 admin.site.register(Game)
-admin.site.register(Team, list_display=['image_tag','name_tag'])
+admin.site.register(League)
+admin.site.register(Team, list_display=['image_tag','get_name','get_points'])
 
 #
 # @admin.register(Game)
