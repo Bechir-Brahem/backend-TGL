@@ -41,15 +41,15 @@ class Game(models.Model):
     awayTeam = models.ForeignKey('Team', on_delete=models.DO_NOTHING, related_name="awayTeam")
     homeTeamScore = models.IntegerField(default=0)
     awayTeamScore = models.IntegerField(default=0)
-    start_time = models.DateTimeField()
-    end_time = models.DateTimeField()
+    startTime = models.DateTimeField()
+    endTime = models.DateTimeField()
     updateTeamPoints = models.BooleanField(default=True)
 
     # duration = models.IntegerField(help_text="in minutes")
 
     def __str__(self):
         return f'({self.id}) {self.league}: {self.homeTeam.name} {self.homeTeamScore}-' \
-               f'{self.awayTeamScore} {self.awayTeam.name}+ {self.start_time}'
+               f'{self.awayTeamScore} {self.awayTeam.name}+ {self.startTime}'
 
 
 def update_team_points(sender, instance, **kwargs):

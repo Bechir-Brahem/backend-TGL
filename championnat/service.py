@@ -18,8 +18,8 @@ def games_for_all_leagues(limit=5):
         league_name = league.name
         objects = Game.objects.filter(league=league).values('homeTeam__name', 'homeTeam__image', 'awayTeam__name',
                                                             'awayTeam__image'
-                                                            , 'awayTeamScore', 'homeTeamScore', 'start_time',
-                                                            'end_time')[:limit]
+                                                            , 'awayTeamScore', 'homeTeamScore', 'startTime',
+                                                            'endTime')[:limit]
         ret[league_name] = list(objects)
     return ret
 
@@ -29,18 +29,38 @@ def games_per_league(league):
         leagueObj=League.objects.get(name=league)
     except League.DoesNotExist:
         raise Http404
-    print(list(leagueObj.games.all()))
-    return list(
-        leagueObj.games.values())
+    ret = []
+    a=leagueObj.games.select_related('league','homeTeam','awayTeam').all()
+    for game in a:
+        tmp=model_to_dict(game)
+        tmp['league']=model_to_dict(game.league)
+        homeTeam = model_to_dict(game.homeTeam)
+        homeTeam['image']=game.homeTeam.image.url
+        tmp['homeTeam']=homeTeam
+        awayTeam = model_to_dict(game.awayTeam)
+        awayTeam['image']=game.awayTeam.image.url
+        tmp['awayTeam']=awayTeam
+        ret.append(tmp)
+    return ret
 
-
+from django.forms.models import model_to_dict
 def live_games():
-    return list(Game.objects.filter(
-        end_time__gte=datetime.now(),
-        start_time__lte=datetime.now()
-    ).values('homeTeam__name', 'homeTeam__image', 'awayTeam__name',
-             'awayTeam__image', 'awayTeamScore', 'homeTeamScore',
-             'start_time', 'end_time'))
+    ret = []
+    a= Game.objects.filter(
+        endTime__gte=datetime.now(),
+        startTime__lte=datetime.now()
+    ).select_related('league','homeTeam','awayTeam').all()
+    for game in a:
+        tmp=model_to_dict(game)
+        tmp['league']=model_to_dict(game.league)
+        homeTeam = model_to_dict(game.homeTeam)
+        homeTeam['image']=game.homeTeam.image.url
+        tmp['homeTeam']=homeTeam
+        awayTeam = model_to_dict(game.awayTeam)
+        awayTeam['image']=game.awayTeam.image.url
+        tmp['awayTeam']=awayTeam
+        ret.append(tmp)
+    return ret
 
 
 def teams_per_league(league):
