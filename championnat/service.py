@@ -36,9 +36,14 @@ def games_per_league(league):
         tmp['league']=game.league.name
         homeTeam = model_to_dict(game.homeTeam)
         homeTeam['image']=game.homeTeam.image.url
+        homeTeam['league']=game.league.name
         tmp['homeTeam']=homeTeam
+        del tmp['homeTeam']['id']
+
         awayTeam = model_to_dict(game.awayTeam)
         awayTeam['image']=game.awayTeam.image.url
+        del tmp['awayTeam']['id']
+        awayTeam['league']=game.league.name
         tmp['awayTeam']=awayTeam
         ret.append(tmp)
     return ret
@@ -51,14 +56,19 @@ def live_games():
         startTime__lte=datetime.now()
     ).select_related('league','homeTeam','awayTeam').all()
     for game in a:
-        tmp=model_to_dict(game)
-        tmp['league']=game.league.name
+        tmp = model_to_dict(game)
+        tmp['league'] = game.league.name
         homeTeam = model_to_dict(game.homeTeam)
-        homeTeam['image']=game.homeTeam.image.url
-        tmp['homeTeam']=homeTeam
+        homeTeam['image'] = game.homeTeam.image.url
+        homeTeam['league'] = game.league.name
+        tmp['homeTeam'] = homeTeam
+        del tmp['homeTeam']['id']
+
         awayTeam = model_to_dict(game.awayTeam)
-        awayTeam['image']=game.awayTeam.image.url
-        tmp['awayTeam']=awayTeam
+        awayTeam['image'] = game.awayTeam.image.url
+        del tmp['awayTeam']['id']
+        awayTeam['league'] = game.league.name
+        tmp['awayTeam'] = awayTeam
         ret.append(tmp)
     return ret
 
