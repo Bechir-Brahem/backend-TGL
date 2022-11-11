@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.core import serializers
+from django.http import Http404
 
 from .models import Game, Team,League
 
@@ -27,8 +28,7 @@ def games_per_league(league):
     try:
         leagueObj=League.objects.get(name=league)
     except League.DoesNotExist:
-        raise ModuleNotFoundError
-
+        raise Http404
     print(list(leagueObj.games.all()))
     return list(
         leagueObj.games.values())
@@ -44,7 +44,10 @@ def live_games():
 
 
 def teams_per_league(league):
-    leagueObj=League.objects.get(name=league)
+    try:
+        leagueObj=League.objects.get(name=league)
+    except League.DoesNotExist:
+        raise Http404
     return list(leagueObj.teams.all().values())
     # a=Game.objects.filter(league=league).values_list('homeTeam',flat=True)
     # b=Game.objects.filter(league=league).values_list('awayTeam',flat=True)
