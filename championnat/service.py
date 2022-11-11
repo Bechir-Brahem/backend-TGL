@@ -34,6 +34,7 @@ def games_per_league(league):
     for game in a:
         tmp=model_to_dict(game)
         tmp['league']=model_to_dict(game.league)
+        del tmp['league']['id']
         homeTeam = model_to_dict(game.homeTeam)
         homeTeam['image']=game.homeTeam.image.url
         tmp['homeTeam']=homeTeam
@@ -53,6 +54,7 @@ def live_games():
     for game in a:
         tmp=model_to_dict(game)
         tmp['league']=model_to_dict(game.league)
+        del tmp['league']['id']
         homeTeam = model_to_dict(game.homeTeam)
         homeTeam['image']=game.homeTeam.image.url
         tmp['homeTeam']=homeTeam
