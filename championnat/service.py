@@ -33,7 +33,7 @@ def games_per_league(league):
     a=leagueObj.games.select_related('league','homeTeam','awayTeam').all()
     for game in a:
         tmp=model_to_dict(game)
-        tmp['league']=model_to_dict(game.league).name
+        tmp['league']=game.league.name
         homeTeam = model_to_dict(game.homeTeam)
         homeTeam['image']=game.homeTeam.image.url
         tmp['homeTeam']=homeTeam
@@ -52,7 +52,7 @@ def live_games():
     ).select_related('league','homeTeam','awayTeam').all()
     for game in a:
         tmp=model_to_dict(game)
-        tmp['league']=model_to_dict(game.league).name
+        tmp['league']=game.league.name
         homeTeam = model_to_dict(game.homeTeam)
         homeTeam['image']=game.homeTeam.image.url
         tmp['homeTeam']=homeTeam
