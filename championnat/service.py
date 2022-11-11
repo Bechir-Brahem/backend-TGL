@@ -45,6 +45,7 @@ def games_per_league(league):
         awayTeam['league']=game.league.name
         tmp['awayTeam']=awayTeam
         del tmp['awayTeam']['id']
+        del tmp['updateTeamPoints']
         ret.append(tmp)
     return ret
 
@@ -69,6 +70,7 @@ def live_games():
         awayTeam['league'] = game.league.name
         tmp['awayTeam'] = awayTeam
         del tmp['awayTeam']['id']
+        del tmp['updateTeamPoints']
         ret.append(tmp)
     return ret
 
