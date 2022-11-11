@@ -81,7 +81,7 @@ def teams_per_league(league):
         leagueObj=League.objects.get(name=league)
     except League.DoesNotExist:
         raise Http404
-    a= leagueObj.objects.all()
+    a= leagueObj.teams.all()
     ret =[]
     for team in a:
         tmp=model_to_dict(team)
