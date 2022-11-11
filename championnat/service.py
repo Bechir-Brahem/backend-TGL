@@ -81,7 +81,14 @@ def teams_per_league(league):
         leagueObj=League.objects.get(name=league)
     except League.DoesNotExist:
         raise Http404
-    a= leagueObj.objects.select_related()
+    a= leagueObj.objects.select_related('league').all()
+    ret =[]
+    for team in a:
+        tmp=model_to_dict(team)
+        tmp['league']=league
+        del tmp['league_id']
+        ret.append(tmp)
+    return ret
     # a=Game.objects.filter(league=league).values_list('homeTeam',flat=True)
     # b=Game.objects.filter(league=league).values_list('awayTeam',flat=True)
     # teams_pk=a.union(b).distinct()
