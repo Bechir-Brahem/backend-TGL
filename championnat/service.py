@@ -86,6 +86,7 @@ def teams_per_league(league):
     for team in a:
         tmp=model_to_dict(team)
         tmp['league']=league
+        tmp['image']=team.image.url
         ret.append(tmp)
     return ret
     # a=Game.objects.filter(league=league).values_list('homeTeam',flat=True)
