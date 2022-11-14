@@ -105,6 +105,6 @@ def games_per_team(team):
 
 
 def players_per_team(team):
-    ret = Player.objects.filter(team__id=team)
+    ret = Player.objects.filter(team__name=team)
     print(ret)
     return ret

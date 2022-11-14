@@ -1,3 +1,6 @@
+import os
+from uuid import uuid4
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import pre_save
@@ -13,10 +16,18 @@ class League(models.Model):
     def __str__(self):
         return self.name
 
+def path_and_rename(path):
+    def wrapper(instance, filename):
+        ext = filename.split('.')[-1]
+        # get filename
+        filename = '{}.{}'.format(uuid4().hex, ext)
+        # return the whole path to the file
+        return os.path.join(path, filename)
+    return wrapper
 
 class Team(models.Model):
     name = models.CharField(max_length=50, unique=True)
-    image = models.ImageField(upload_to=STATIC_PATH)
+    image = models.ImageField(upload_to=path_and_rename(STATIC_PATH))
     league = models.ForeignKey('League', on_delete=models.CASCADE, related_name='teams')
     points = models.IntegerField(default=0)
     victoires = models.IntegerField(default=0)
