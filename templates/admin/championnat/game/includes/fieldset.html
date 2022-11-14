@@ -148,6 +148,7 @@
 
 
                 addButton=document.querySelector('tr.add-row a')
+                els=document.querySelectorAll('tr select[id^=id_comments][id$=player]')
                 addButton.addEventListener('click',()=>{
                     let tmp=[]
                     for(let i of els){
