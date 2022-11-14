@@ -3,9 +3,7 @@ from datetime import datetime
 from django.forms.models import model_to_dict
 from django.http import Http404
 
-from .models import Game, League
-
-
+from .models import Game, League, Player, Team
 
 
 def leagues():
@@ -35,20 +33,17 @@ def games_per_league(league):
     a = leagueObj.games.select_related('league', 'homeTeam', 'awayTeam').all()
     for game in a:
         tmp = model_to_dict(game)
-        del tmp['id']
         tmp['league'] = game.league.name
         del tmp['league']
         homeTeam = model_to_dict(game.homeTeam)
         homeTeam['image'] = game.homeTeam.image.url
         homeTeam['league'] = game.league.name
         tmp['homeTeam'] = homeTeam
-        del tmp['homeTeam']['id']
 
         awayTeam = model_to_dict(game.awayTeam)
         awayTeam['image'] = game.awayTeam.image.url
         awayTeam['league'] = game.league.name
         tmp['awayTeam'] = awayTeam
-        del tmp['awayTeam']['id']
         del tmp['updateTeamPoints']
         ret.append(tmp)
     return ret
@@ -62,20 +57,17 @@ def live_games():
     ).select_related('league', 'homeTeam', 'awayTeam').all()
     for game in a:
         tmp = model_to_dict(game)
-        del tmp['id']
         tmp['league'] = game.league.name
         del tmp['league']
         homeTeam = model_to_dict(game.homeTeam)
         homeTeam['image'] = game.homeTeam.image.url
         homeTeam['league'] = game.league.name
         tmp['homeTeam'] = homeTeam
-        del tmp['homeTeam']['id']
 
         awayTeam = model_to_dict(game.awayTeam)
         awayTeam['image'] = game.awayTeam.image.url
         awayTeam['league'] = game.league.name
         tmp['awayTeam'] = awayTeam
-        del tmp['awayTeam']['id']
         del tmp['updateTeamPoints']
         ret.append(tmp)
     return ret
@@ -92,21 +84,27 @@ def teams_per_league(league):
         tmp = model_to_dict(team)
         tmp['league'] = league
         tmp['image'] = team.image.url
-        del tmp['id']
         ret.append(tmp)
     return ret
-    # a=Game.objects.filter(league=league).values_list('homeTeam',flat=True)
-    # b=Game.objects.filter(league=league).values_list('awayTeam',flat=True)
-    # teams_pk=a.union(b).distinct()
-    # teams=Team.objects.filter(pk__in=teams_pk)
-    # team
-    #
-    # from django.forms.models import model_to_dict
-    # ret = []
-    # for team in teams:
-    #     tmp=model_to_dict(team)
-    #     tmp['image']=team.image.url
-    #     ret.append(tmp)
-    # print(ret)
-    #
-    # return ret
+
+
+def comments_per_game(game):
+    try:
+        game = Game.objects.get(id=game)
+    except Game.DoesNotExist:
+        raise Http404
+    return game.comments
+
+
+def games_per_team(team):
+    try:
+        team = Team.objects.get(id=team)
+    except Team.DoesNotExist:
+        raise Http404
+    return team.homeGames.all(), team.awayGames.all()
+
+
+def players_per_team(team):
+    ret = Player.objects.filter(team__id=team)
+    print(ret)
+    return ret

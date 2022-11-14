@@ -1,7 +1,7 @@
 """backend_TGL URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/3.0/topics/http/urls/
+    https://docs.djangoproject.com/en/3.2/topics/http/urls/
 Examples:
 Function views
     1. Add an import:  from my_app import views
@@ -21,6 +21,3 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('championnat.urls'))
 ]
-admin.site.site_header = 'Tunisia Golden League Administration'
-admin.site.site_title = 'Tunisia Golden League Administration'
-admin.site.index_title = 'Tunisia Golden League Administration'
