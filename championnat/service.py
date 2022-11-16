@@ -104,6 +104,14 @@ def games_per_team(team):
     return team.homeGames.all(), team.awayGames.all()
 
 
+def game_per_id(game):
+    try:
+        game = Game.objects.get(id=game)
+    except Game.DoesNotExist:
+        raise Http404
+    return game
+
+
 def players_per_team(team):
     ret = Player.objects.filter(team__name=team)
     print(ret)

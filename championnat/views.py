@@ -49,6 +49,7 @@ def gamesPerTeam(request):
     awayGames = []
     for game in ret[0]:
         tmp = model_to_dict(game)
+        tmp['league'] = game.league.name
         tmp['homeTeam'] = model_to_dict(game.homeTeam)
         tmp['homeTeam']['image'] = game.homeTeam.image.url
         tmp['awayTeam'] = model_to_dict(game.awayTeam)
@@ -56,6 +57,7 @@ def gamesPerTeam(request):
         homeGames.append(tmp)
     for game in ret[1]:
         tmp = model_to_dict(game)
+        tmp['league'] = game.league.name
         tmp['homeTeam'] = model_to_dict(game.homeTeam)
         tmp['awayTeam'] = model_to_dict(game.awayTeam)
         tmp['homeTeam']['image'] = game.homeTeam.image.url
@@ -66,5 +68,18 @@ def gamesPerTeam(request):
         'homeGames': homeGames,
         'awayGames': awayGames
     }, safe=True)
+
+
+def gamePerId(request):
+    game = request.GET.get('game')
+    game = game_per_id(game)
+    tmp = model_to_dict(game)
+    tmp['league'] = game.league.name
+    tmp['homeTeam'] = model_to_dict(game.homeTeam)
+    tmp['homeTeam']['image'] = game.homeTeam.image.url
+    tmp['awayTeam'] = model_to_dict(game.awayTeam)
+    tmp['awayTeam']['image'] = game.awayTeam.image.url
+
+    return JsonResponse(tmp, safe=False)
 
 # Create your views here.

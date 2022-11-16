@@ -1,7 +1,9 @@
 from django.urls import path
 
 from .views import homeView, liveActivity, \
-    leagueActivity, teamsPerDivision, leaguesView, playerPerTeam, commentsPerGame, gamesPerTeam
+    leagueActivity, teamsPerDivision, leaguesView, playerPerTeam,\
+    commentsPerGame, gamesPerTeam, gamePerId
+
 
 urlpatterns = [
     path('', homeView, name='home'),
@@ -12,5 +14,6 @@ urlpatterns = [
     path('leagues', leaguesView, name='leagues'),
     path('players',playerPerTeam,name='players'),
     path('comments',commentsPerGame,name='comments'),
-    path('games', gamesPerTeam, name='gamesPerTeam')
+    path('games', gamesPerTeam, name='gamesPerTeam'),
+    path('game', gamePerId, name='gamesPerId')
 ]
