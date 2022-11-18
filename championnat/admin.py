@@ -21,7 +21,7 @@ class GameCommentInline(admin.TabularInline):
 
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
-    list_display = ('league', 'homeTeam', 'awayTeam', 'homeTeamScore', 'awayTeamScore')
+    list_display = ('league', 'homeTeam', 'awayTeam', 'homeTeamScore', 'awayTeamScore','arbitreLink')
     inlines = [GameCommentInline]
 
 

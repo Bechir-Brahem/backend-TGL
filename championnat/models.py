@@ -1,9 +1,12 @@
+import datetime
 import os
 from uuid import uuid4
 
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import pre_save
+from django.urls import reverse
+from django.utils.deconstruct import deconstructible
 from django.utils.html import mark_safe
 
 from backend_TGL.settings import STATIC_PATH
@@ -16,18 +19,27 @@ class League(models.Model):
     def __str__(self):
         return self.name
 
-def path_and_rename(path):
-    def wrapper(instance, filename):
+
+@deconstructible
+class PathAndRename(object):
+
+    def __init__(self, sub_path):
+        self.path = sub_path
+
+    def __call__(self, instance, filename):
         ext = filename.split('.')[-1]
-        # get filename
+        # set filename as random string
         filename = '{}.{}'.format(uuid4().hex, ext)
         # return the whole path to the file
-        return os.path.join(path, filename)
-    return wrapper
+        return os.path.join(self.path, filename)
+
+
+path_and_rename = PathAndRename(STATIC_PATH)
+
 
 class Team(models.Model):
     name = models.CharField(max_length=50, unique=True)
-    image = models.ImageField(upload_to=path_and_rename(STATIC_PATH))
+    image = models.ImageField(upload_to=path_and_rename)
     league = models.ForeignKey('League', on_delete=models.CASCADE, related_name='teams')
     points = models.IntegerField(default=0)
     victoires = models.IntegerField(default=0)
@@ -61,13 +73,27 @@ class Game(models.Model):
     awayTeam = models.ForeignKey('Team', on_delete=models.CASCADE, related_name="awayGames")
     homeTeamScore = models.IntegerField(default=0)
     awayTeamScore = models.IntegerField(default=0)
-    startDate = models.DateTimeField()
-    endDate = models.DateTimeField()
+
+    firstHalfStartDate = models.DateTimeField(default=datetime.datetime.now())
+    firstHalfEndDate = models.DateTimeField(default=datetime.datetime.now())
+    secondHalfStartDate = models.DateTimeField(default=datetime.datetime.now())
+    secondHalfEndDate = models.DateTimeField(default=datetime.datetime.now())
+
+    firstHalfFinished = models.BooleanField(default=False)
+    secondHalfStarted = models.BooleanField(default=False)
+
+    dayInLeague = models.IntegerField(default=0)
+    live = models.BooleanField(default=False)
+    finished = models.BooleanField(default=False)
+    # endDate = models.DateTimeField()
     updateTeamPoints = models.BooleanField(default=True)
 
     def __str__(self):
         return f'({self.id}) {self.league}: {self.homeTeam.name} {self.homeTeamScore}-' \
-               f'{self.awayTeamScore} {self.awayTeam.name}+ {self.startDate}'
+               f'{self.awayTeamScore} {self.awayTeam.name}+ {self.firstHalfStartDate}'
+
+    def arbitreLink(self):
+        return mark_safe(f"<a href={reverse('arbitre', kwargs={'game_id': self.id})}><u>Lien pour l'arbitre</u></a>")
 
 
 class GameComment(models.Model):
@@ -92,6 +118,8 @@ def update_team_points(sender, instance, **kwargs):
         raise Exception('awayTeam League is not the same as the Game League')
 
     if not instance.updateTeamPoints:
+        return
+    if not instance.finished:
         return
 
     preSaveGame = None

@@ -80,88 +80,88 @@
 
         })
 
-
-        django.jQuery(document).ready(
-            async ()=>{
-                homeTeamPlayers = []
-                awayTeamPlayers = []
-                homeTeamName = ""
-                awayTeamName = ""
-                let els=document.querySelectorAll('tr select[id^=id_comments][id$=player]')
-                let vals=[]
-                for(let i of els){
-                    vals.push(i.value)
-                }
-                function fillPlayers(selected=null) {
-                    // all the player html select tags in the inlines
-                    let playerEls = document.querySelectorAll('tr select[id^=id_comments][id$=player]')
-                    let i =-1
-                    for (let playerEl of playerEls) {
-                        i++
-                        playerEl.length = 0
-                        playerEl.add(new Option("---------", "", true, true))
-                        for (let player of homeTeamPlayers) {
-                            if(selected && player['id']==selected[i])
-                            {
-                                playerEl.add(new Option(homeTeamName + ': ' + player['fullname'], player['id'],true,true))
-
-                            }else{
-                                playerEl.add(new Option(homeTeamName + ': ' + player['fullname'], player['id']))
-
-                            }
-                        }
-                        for (let player of awayTeamPlayers) {
-                            if(selected && player['id']==selected[i])
-                                playerEl.add(new Option(awayTeamName + ': ' + player['fullname'], player['id'],true,true))
-                            else
-                                playerEl.add(new Option(awayTeamName + ': ' + player['fullname'], player['id']))
-                        }
-
-                    }
-                }
-
-                async function getPlayersData(team) {
-                    let data = await axios.get(host + '/players', {
-                        params: {team: team}
-                    })
-                    return data.data
-                }
-
-                selectHomeTeam.addEventListener('change', async (e) => {
-                    homeTeamName = selectHomeTeam.selectedOptions[0].innerText
-                    homeTeamPlayers = await getPlayersData(homeTeamName)
-                    fillPlayers()
-                })
-
-                selectAwayTeam.addEventListener('change', async (e) => {
-                    awayTeamName = selectAwayTeam.selectedOptions[0].innerText
-                    awayTeamPlayers = await getPlayersData(awayTeamName)
-                    fillPlayers()
-                })
-
-
-                homeTeamName = selectHomeTeam.selectedOptions[0].innerText
-                homeTeamPlayers = await getPlayersData(homeTeamName)
-                awayTeamName = selectAwayTeam.selectedOptions[0].innerText
-                awayTeamPlayers = await getPlayersData(awayTeamName)
-                fillPlayers(vals)
-
-
-                addButton=document.querySelector('tr.add-row a')
-                addButton.addEventListener('click',()=>{
-                    els=document.querySelectorAll('tr select[id^=id_comments][id$=player]')
-                    let tmp=[]
-                    for(let i of els){
-                        tmp.push(i.value)
-                    }
-                    fillPlayers(tmp)
-
-                })
-
-
-
-
-            })
+        {##}
+        {#django.jQuery(document).ready(#}
+        {#    async ()=>{#}
+        {#        homeTeamPlayers = []#}
+        {#        awayTeamPlayers = []#}
+        {#        homeTeamName = ""#}
+        {#        awayTeamName = ""#}
+        {#        let els=document.querySelectorAll('tr select[id^=id_comments][id$=player]')#}
+        {#        let vals=[]#}
+        {#        for(let i of els){#}
+        {#            vals.push(i.value)#}
+        {#        }#}
+        {#        function fillPlayers(selected=null) {#}
+        {#            // all the player html select tags in the inlines#}
+        {#            let playerEls = document.querySelectorAll('tr select[id^=id_comments][id$=player]')#}
+        {#            let i =-1#}
+        {#            for (let playerEl of playerEls) {#}
+        {#                i++#}
+        {#                playerEl.length = 0#}
+        {#                playerEl.add(new Option("---------", "", true, true))#}
+        {#                for (let player of homeTeamPlayers) {#}
+        {#                    if(selected && player['id']==selected[i])#}
+        {#                    {#}
+        {#                        playerEl.add(new Option(homeTeamName + ': ' + player['fullname'], player['id'],true,true))#}
+        {##}
+        {#                    }else{#}
+        {#                        playerEl.add(new Option(homeTeamName + ': ' + player['fullname'], player['id']))#}
+        {##}
+        {#                    }#}
+        {#                }#}
+        {#                for (let player of awayTeamPlayers) {#}
+        {#                    if(selected && player['id']==selected[i])#}
+        {#                        playerEl.add(new Option(awayTeamName + ': ' + player['fullname'], player['id'],true,true))#}
+        {#                    else#}
+        {#                        playerEl.add(new Option(awayTeamName + ': ' + player['fullname'], player['id']))#}
+        {#                }#}
+        {##}
+        {#            }#}
+        {#        }#}
+        {##}
+        {#        async function getPlayersData(team) {#}
+        {#            let data = await axios.get(host + '/players', {#}
+        {#                params: {team: team}#}
+        {#            })#}
+        {#            return data.data#}
+        {#        }#}
+        {##}
+        {#        selectHomeTeam.addEventListener('change', async (e) => {#}
+        {#            homeTeamName = selectHomeTeam.selectedOptions[0].innerText#}
+        {#            homeTeamPlayers = await getPlayersData(homeTeamName)#}
+        {#            fillPlayers()#}
+        {#        })#}
+        {##}
+        {#        selectAwayTeam.addEventListener('change', async (e) => {#}
+        {#            awayTeamName = selectAwayTeam.selectedOptions[0].innerText#}
+        {#            awayTeamPlayers = await getPlayersData(awayTeamName)#}
+        {#            fillPlayers()#}
+        {#        })#}
+        {##}
+        {##}
+        {#        homeTeamName = selectHomeTeam.selectedOptions[0].innerText#}
+        {#        homeTeamPlayers = await getPlayersData(homeTeamName)#}
+        {#        awayTeamName = selectAwayTeam.selectedOptions[0].innerText#}
+        {#        awayTeamPlayers = await getPlayersData(awayTeamName)#}
+        {#        fillPlayers(vals)#}
+        {##}
+        {##}
+        {#        addButton=document.querySelector('tr.add-row a')#}
+        {#        addButton.addEventListener('click',()=>{#}
+        {#            els=document.querySelectorAll('tr select[id^=id_comments][id$=player]')#}
+        {#            let tmp=[]#}
+        {#            for(let i of els){#}
+        {#                tmp.push(i.value)#}
+        {#            }#}
+        {#            fillPlayers(tmp)#}
+        {##}
+        {#        })#}
+        {##}
+        {##}
+        {##}
+        {##}
+        {#    })#}
 
 
     </script>
