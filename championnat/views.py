@@ -72,7 +72,7 @@ def playersView(request):
                 tmp['team_name=']=player.team.name
                 tmp['team_image']=player.team.image.url
                 ret.append(tmp)
-            return JsonResponse(ret)
+            return JsonResponse(ret,safe=False)
         except League.DoesNotExist:
             raise Http404('league n\'existe pas')
     raise Http404()
