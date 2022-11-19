@@ -14,6 +14,7 @@ def process_game(game):
     tmp = model_to_dict(game)
     tmp['league'] = game.league.name
     tmp['startDate'] = tmp['firstHalfStartDate']
+    tmp['endDate'] = tmp['secondHalfEndDate']
     homeTeam = model_to_dict(game.homeTeam)
     homeTeam['image'] = game.homeTeam.image.url
     homeTeam['league'] = game.league.name
