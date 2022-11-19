@@ -3,6 +3,7 @@ import os
 from uuid import uuid4
 
 from django.contrib.auth.models import User
+from django.core.exceptions import BadRequest
 from django.db import models
 from django.db.models.signals import pre_save
 from django.urls import reverse
@@ -193,6 +194,10 @@ def update_team_points(sender, instance, **kwargs):
 
 
 def update_player_info(sender, instance, **kwargs):
+    if instance.player.team_id!=instance.game.homeTeam_id and\
+            instance.player.team_id!=instance.game.awayTeam_id:
+        raise BadRequest('joueur n\'est pas dans les \'equipes du jeu')
+
     preSaveComment = None
     try:
         preSaveComment = GameComment.objects.get(id=instance.id)

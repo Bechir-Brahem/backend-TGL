@@ -70,7 +70,6 @@ def playersView(request):
     raise Http404()
 
 
-
 def commentsPerGame(request):
     game = request.GET.get('game')
     return JsonResponse(list(comments_per_game(game).values('time', 'type', playerName=F('player__fullname'))),
