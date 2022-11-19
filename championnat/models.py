@@ -134,6 +134,7 @@ class GameComment(models.Model):
 
 
 def update_team_points(sender, instance, **kwargs):
+    print('here')
     if instance.league != instance.homeTeam.league:
         raise Exception('homeTeam League is not the same as the Game League')
     if instance.league != instance.awayTeam.league:
@@ -151,7 +152,7 @@ def update_team_points(sender, instance, **kwargs):
         # new object
         pass
 
-    if preSaveGame:
+    if preSaveGame and preSaveGame.finished:
         if preSaveGame.homeTeamScore > preSaveGame.awayTeamScore:
             instance.homeTeam.points -= 3
             instance.homeTeam.victoires -= 1
@@ -188,6 +189,7 @@ def update_team_points(sender, instance, **kwargs):
     instance.homeTeam.buts_encaisse += instance.awayTeamScore
     instance.awayTeam.buts_marque += instance.awayTeamScore
     instance.awayTeam.buts_encaisse += instance.homeTeamScore
+    print('2here')
 
     instance.homeTeam.save()
     instance.awayTeam.save()
