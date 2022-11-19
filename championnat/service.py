@@ -1,4 +1,3 @@
-from django.forms.models import model_to_dict
 from django.http import Http404
 
 from .models import Game, League, Player, Team
@@ -20,14 +19,12 @@ def live_games():
     return Game.objects.filter(live=True).all()
 
 
-
 def teams_per_league(league):
     try:
         leagueObj = League.objects.get(name=league)
     except League.DoesNotExist:
         raise Http404
     return leagueObj.teams.all()
-
 
 
 def comments_per_game(game):
@@ -55,6 +52,8 @@ def game_per_id(game):
 
 
 def players_per_team(team):
-    ret = Player.objects.filter(team__name=team)
-    print(ret)
-    return ret
+    return Player.objects.filter(team__name=team)
+
+
+def players_per_league(league):
+    return Player.objects.filter(team__league__name=league)

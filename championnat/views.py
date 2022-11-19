@@ -1,17 +1,19 @@
-import datetime
+import json
 
-from dateutil import tz
 from django.db.models import F
+from django.forms import model_to_dict
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 
+from .helper import get_now
+from .models import GameComment
 from .service import *
 
 
 def process_game(game):
     tmp = model_to_dict(game)
     tmp['league'] = game.league.name
-    tmp['startDate']=tmp['firstHalfStartDate']
+    tmp['startDate'] = tmp['firstHalfStartDate']
     homeTeam = model_to_dict(game.homeTeam)
     homeTeam['image'] = game.homeTeam.image.url
     homeTeam['league'] = game.league.name
@@ -51,9 +53,22 @@ def teamsPerDivision(request):
     return JsonResponse(list(teams_per_league(league).values()), safe=False)
 
 
-def playerPerTeam(request):
+def playersView(request):
     team = request.GET.get('team')
-    return JsonResponse(list(players_per_team(team).values()), safe=False)
+    league = request.GET.get('league')
+    if team:
+        print(team)
+        try:
+            return JsonResponse(list(players_per_team(team).values()), safe=False)
+        except Team.DoesNotExist:
+            raise Http404('team n\'existe pas')
+    elif league:
+        try:
+            return JsonResponse(list(players_per_league(league).values()), safe=False)
+        except League.DoesNotExist:
+            raise Http404('league n\'existe pas')
+    raise Http404()
+
 
 
 def commentsPerGame(request):
@@ -82,9 +97,6 @@ def gamePerId(request):
     game = request.GET.get('game')
     game = game_per_id(game)
     return JsonResponse(process_game(game), safe=False)
-
-
-def get_now(): return datetime.datetime.now().astimezone(tz=tz.gettz('Africa/Tunis'))
 
 
 def startGame(request, game_id):
@@ -126,6 +138,27 @@ def finishGame(request, game_id):
     return HttpResponse()
 
 
+def addComment(request, game_id):
+    game = Game.objects.get(id=game_id)
+    firstHalf = game.live and not game.finished and not game.firstHalfFinished and not game.secondHalfStarted
+    secondHalf = game.live and not game.finished and game.firstHalfFinished and game.secondHalfStarted
+    if firstHalf or secondHalf:
+        data = json.loads(request.body)
+        print(data)
+        comment = GameComment(type=data['type'], time=game.counter(),
+                              player_id=data['player'], game_id=game_id
+                              )
+        comment.save()
+        team_id = comment.player.team_id
+        if comment.type == 'but':
+            if team_id == game.homeTeam_id:
+                game.homeTeamScore += 1
+            elif team_id == game.awayTeam_id:
+                game.awayTeamScore += 1
+            game.save()
+    return HttpResponse()
+
+
 def arbitreView(request, game_id):
     print('in view')
     print(game_id)
@@ -133,31 +166,14 @@ def arbitreView(request, game_id):
     homeTeamPlayers = Team.objects.get(id=game.homeTeam.id).players.all()
     awayTeamPlayers = Team.objects.get(id=game.awayTeam.id).players.all()
     comments = game.comments.all()
-    counter = 0
-    if game.live and not game.firstHalfFinished and not game.secondHalfStarted and not game.finished:
-        tmp = get_now() - game.firstHalfStartDate
-        counter = tmp.total_seconds()
-    elif game.live and game.firstHalfFinished and not game.secondHalfStarted and not game.finished:
-        tmp = game.firstHalfEndDate- game.firstHalfStartDate
-        counter = tmp.total_seconds()
-    elif game.live and game.firstHalfFinished and game.secondHalfStarted and not game.finished:
-        tmp = game.firstHalfEndDate- game.firstHalfStartDate
-        counter = tmp.total_seconds()
-        tmp = get_now() - game.secondHalfStartDate
-        counter += tmp.total_seconds()
-    elif not game.live and game.firstHalfFinished and game.secondHalfStarted and game.finished:
-        tmp = game.firstHalfEndDate- game.firstHalfStartDate
-        counter = tmp.total_seconds()
-        tmp = game.secondHalfEndDate - game.secondHalfStartDate
-        counter += tmp.total_seconds()
-    print(counter)
 
     context = {
         "game": game,
         "comments": comments,
         "players": homeTeamPlayers.union(awayTeamPlayers),
         "url": request.build_absolute_uri('/'),
-        "counter": int(counter)
+        "choices": GameComment.choices,
+        "counter": int(game.counter())
     }
     return render(request, 'championnat/arbitre.html', context)
 

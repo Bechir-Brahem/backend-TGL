@@ -10,6 +10,7 @@ from django.utils.deconstruct import deconstructible
 from django.utils.html import mark_safe
 
 from backend_TGL.settings import STATIC_PATH
+from .helper import get_now
 
 
 class League(models.Model):
@@ -94,6 +95,26 @@ class Game(models.Model):
 
     def arbitreLink(self):
         return mark_safe(f"<a href={reverse('arbitre', kwargs={'game_id': self.id})}><u>Lien pour l'arbitre</u></a>")
+
+    def counter(self):
+        counter = 0
+        if self.live and not self.firstHalfFinished and not self.secondHalfStarted and not self.finished:
+            tmp = get_now() - self.firstHalfStartDate
+            counter = tmp.total_seconds()
+        elif self.live and self.firstHalfFinished and not self.secondHalfStarted and not self.finished:
+            tmp = self.firstHalfEndDate - self.firstHalfStartDate
+            counter = tmp.total_seconds()
+        elif self.live and self.firstHalfFinished and self.secondHalfStarted and not self.finished:
+            tmp = self.firstHalfEndDate - self.firstHalfStartDate
+            counter = tmp.total_seconds()
+            tmp = get_now() - self.secondHalfStartDate
+            counter += tmp.total_seconds()
+        elif not self.live and self.firstHalfFinished and self.secondHalfStarted and self.finished:
+            tmp = self.firstHalfEndDate - self.firstHalfStartDate
+            counter = tmp.total_seconds()
+            tmp = self.secondHalfEndDate - self.secondHalfStartDate
+            counter += tmp.total_seconds()
+        return counter
 
 
 class GameComment(models.Model):
