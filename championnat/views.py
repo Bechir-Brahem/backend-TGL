@@ -64,7 +64,15 @@ def playersView(request):
             raise Http404('team n\'existe pas')
     elif league:
         try:
-            return JsonResponse(list(players_per_league(league).values()), safe=False)
+            players = players_per_league(league)
+            ret = []
+            for player in players:
+                tmp = model_to_dict(player)
+                del tmp['team_id']
+                tmp['team_name=']=player.team.name
+                tmp['team_image']=player.team.image.url
+                ret.append(tmp)
+            return JsonResponse(ret)
         except League.DoesNotExist:
             raise Http404('league n\'existe pas')
     raise Http404()
