@@ -68,7 +68,7 @@ def playersView(request):
             ret = []
             for player in players:
                 tmp = model_to_dict(player)
-                del tmp['team_id']
+                # del tmp['team_id']
                 tmp['team_name=']=player.team.name
                 tmp['team_image']=player.team.image.url
                 ret.append(tmp)
