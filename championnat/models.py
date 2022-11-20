@@ -142,8 +142,6 @@ def update_team_points(sender, instance, **kwargs):
 
     if not instance.updateTeamPoints:
         return
-    if not instance.finished:
-        return
 
     preSaveGame = None
     try:
@@ -152,7 +150,7 @@ def update_team_points(sender, instance, **kwargs):
         # new object
         pass
 
-    if preSaveGame and preSaveGame.finished:
+    if preSaveGame:
         if preSaveGame.homeTeamScore > preSaveGame.awayTeamScore:
             instance.homeTeam.points -= 3
             instance.homeTeam.victoires -= 1

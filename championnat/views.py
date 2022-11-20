@@ -70,10 +70,10 @@ def playersView(request):
             for player in players:
                 tmp = model_to_dict(player)
                 # del tmp['team_id']
-                tmp['team_name']=player.team.name
-                tmp['team_image']=player.team.image.url
+                tmp['team_name'] = player.team.name
+                tmp['team_image'] = player.team.image.url
                 ret.append(tmp)
-            return JsonResponse(ret,safe=False)
+            return JsonResponse(ret, safe=False)
         except League.DoesNotExist:
             raise Http404('league n\'existe pas')
     raise Http404()
@@ -185,4 +185,73 @@ def arbitreView(request, game_id):
     }
     return render(request, 'championnat/arbitre.html', context)
 
+
 # Create your views here.
+def incrementPoints(request):
+    for team in Team.objects.all():
+        team.points += 1
+        team.save()
+    return HttpResponse('success')
+
+
+def resetTeams(request):
+    for team in Team.objects.all():
+        team.points = 0
+        team.buts_encaisse = 0
+        team.buts_marque = 0
+        team.pertes = 0
+        team.nulles = 0
+        team.victoires = 0
+        team.save()
+
+    for player in Player.objects.all():
+        player.cartons_jaunes = 0
+        player.cartons_rouges = 0
+        player.buts = 0
+        player.save()
+
+    for game in Game.objects.all():
+        if game.homeTeamScore > game.awayTeamScore:
+            game.homeTeam.points += 3
+            game.homeTeam.victoires += 1
+            game.awayTeam.pertes += 1
+        elif game.homeTeamScore < game.awayTeamScore:
+            game.awayTeam.points += 3
+            game.homeTeam.pertes += 1
+            game.awayTeam.victoires += 1
+        elif game.homeTeamScore == game.awayTeamScore:
+            game.homeTeam.points += 1
+            game.awayTeam.points += 1
+            game.homeTeam.nulles += 1
+            game.awayTeam.nulles += 1
+
+        game.homeTeam.buts_marque += game.homeTeamScore
+        game.homeTeam.buts_encaisse += game.awayTeamScore
+        game.awayTeam.buts_marque += game.awayTeamScore
+        game.awayTeam.buts_encaisse += game.homeTeamScore
+
+        game.awayTeam.save()
+        game.homeTeam.save()
+
+    for gameComment in GameComment.objects.all():
+        if gameComment.type == 'carton jaune':
+            gameComment.player.cartons_jaunes += 1
+        elif gameComment.type == 'carton rouge':
+            gameComment.player.cartons_rouges += 1
+        elif gameComment.type == 'but':
+            gameComment.player.buts += 1
+        gameComment.player.save()
+
+    return HttpResponse('success')
+
+
+def incrementCounter(request):
+    with open('counter.txt','r+') as f:
+        contents = f.read()
+        f.seek(0)
+        print(contents)
+        a=int(contents)
+        f.write(str(a+1))
+    return HttpResponse(a+1)
+
+

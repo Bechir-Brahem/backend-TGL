@@ -2,10 +2,13 @@ from django.urls import path
 
 from .views import liveActivity, \
     leagueActivity, teamsPerDivision, leaguesView, playersView, \
-    commentsPerGame, gamesPerTeam, gamePerId, arbitreView, startGame,\
-    finishFirstHalf, startSecondHalf, finishGame, addComment
+    commentsPerGame, gamesPerTeam, gamePerId, arbitreView, startGame, \
+    finishFirstHalf, startSecondHalf, finishGame, addComment, incrementPoints, resetTeams, incrementCounter
 
 urlpatterns = [
+    path('config/incrementPoints', incrementPoints, name='config/incrementPoints'),
+    path('config/reset', resetTeams, name='config/reset'),
+    path('config/incrementCounter', incrementCounter, name='config/incrementCounter'),
     path('live', liveActivity, name='live'),
     path('league', leagueActivity, name='league'),
     path('teams', teamsPerDivision, name='teamsPerDivision'),
