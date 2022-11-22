@@ -1,6 +1,9 @@
 ### Python template
 static
 db.sqlite3
+counter.txt
+prod-static/*.jpg
+prod-static/*.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

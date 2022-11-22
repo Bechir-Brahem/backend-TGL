@@ -27,10 +27,13 @@ load_dotenv(os.path.join(BASE_DIR, ".env"))
 # blog_project/settings.py
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_PATH = 'static'
+STATIC_ROOT = "prod-static"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+if not DEBUG:
+    ALLOWED_HOSTS = ['tgl2.westeurope.cloudapp.azure.com']
 
 # Application definition
 
@@ -125,3 +128,16 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.SmallAutoField'
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING',
+    },
+}
