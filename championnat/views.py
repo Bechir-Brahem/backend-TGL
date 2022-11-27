@@ -211,27 +211,28 @@ def resetTeams(request):
         player.save()
 
     for game in Game.objects.all():
-        if game.homeTeamScore > game.awayTeamScore:
-            game.homeTeam.points += 3
-            game.homeTeam.victoires += 1
-            game.awayTeam.pertes += 1
-        elif game.homeTeamScore < game.awayTeamScore:
-            game.awayTeam.points += 3
-            game.homeTeam.pertes += 1
-            game.awayTeam.victoires += 1
-        elif game.homeTeamScore == game.awayTeamScore:
-            game.homeTeam.points += 1
-            game.awayTeam.points += 1
-            game.homeTeam.nulles += 1
-            game.awayTeam.nulles += 1
+        if game.finished:
+            if game.homeTeamScore > game.awayTeamScore:
+                game.homeTeam.points += 3
+                game.homeTeam.victoires += 1
+                game.awayTeam.pertes += 1
+            elif game.homeTeamScore < game.awayTeamScore:
+                game.awayTeam.points += 3
+                game.homeTeam.pertes += 1
+                game.awayTeam.victoires += 1
+            elif game.homeTeamScore == game.awayTeamScore:
+                game.homeTeam.points += 1
+                game.awayTeam.points += 1
+                game.homeTeam.nulles += 1
+                game.awayTeam.nulles += 1
 
-        game.homeTeam.buts_marque += game.homeTeamScore
-        game.homeTeam.buts_encaisse += game.awayTeamScore
-        game.awayTeam.buts_marque += game.awayTeamScore
-        game.awayTeam.buts_encaisse += game.homeTeamScore
+            game.homeTeam.buts_marque += game.homeTeamScore
+            game.homeTeam.buts_encaisse += game.awayTeamScore
+            game.awayTeam.buts_marque += game.awayTeamScore
+            game.awayTeam.buts_encaisse += game.homeTeamScore
 
-        game.awayTeam.save()
-        game.homeTeam.save()
+            game.awayTeam.save()
+            game.homeTeam.save()
 
     for gameComment in GameComment.objects.all():
         if gameComment.type == 'carton jaune':
