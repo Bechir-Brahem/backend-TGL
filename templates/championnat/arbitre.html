@@ -78,12 +78,12 @@
             {{ game.awayTeam.image_tag }}
         </div>
     </div>
-{#    <div style="display: flex" class="input-group input-group-sm">#}
-{#        <label>Temps Ecoulé (minutes)</label>#}
-{#        <input type="number" class="form-control ms-3" id="counterValue"#}
-{#               placeholder="Saisir le temps écoulé en minutes">#}
-{#        <button type="button" class="btn btn-primary" onclick="updateCounter()">Confirm</button>#}
-{#    </div>#}
+    {#    <div style="display: flex" class="input-group input-group-sm">#}
+    {#        <label>Temps Ecoulé (minutes)</label>#}
+    {#        <input type="number" class="form-control ms-3" id="counterValue"#}
+    {#               placeholder="Saisir le temps écoulé en minutes">#}
+    {#        <button type="button" class="btn btn-primary" onclick="updateCounter()">Confirm</button>#}
+    {#    </div>#}
     <div style="display: flex;justify-content: center;align-items: center">
         <span style="font-size: 100px"><span id="counter">00:00</span>"</span>
     </div>
@@ -115,6 +115,29 @@
     </div>
 
     <hr>
+    <span>Ajouter un But sans Joueur:</span>
+    <div style="display: flex;justify-content: space-around;align-items: center">
+        <div>{{ game.homeTeam.name }}:
+            <button class="btn btn-primary" onclick="addGoal(0)"
+                    {% if game.live and not game.finished  and not game.secondHalfStarted and not game.firstHalfFinished %}
+                    {% elif game.live and not game.finished and game.secondHalfStarted and game.firstHalfFinished %}
+                    {% else %}disabled
+                    {% endif %}
+                    >Ajouter But
+            </button>
+        </div>
+        <div>{{ game.awayTeam.name }}:
+            <button class="btn btn-primary" onclick="addGoal(1)"
+                    {% if game.live and not game.finished  and not game.secondHalfStarted and not game.firstHalfFinished %}
+                    {% elif game.live and not game.finished and game.secondHalfStarted and game.firstHalfFinished %}
+                    {% else %}
+                        disabled
+                    {% endif %}
+                    >Ajouter But
+            </button>
+        </div>
+    </div>
+    <hr>
     <div>
         <div>Ajouter un Commentaire:</div>
         <div style="display: flex;justify-content: space-around">
@@ -142,7 +165,7 @@
                         {% elif game.live and not game.finished and game.secondHalfStarted and game.firstHalfFinished %}
                         {% else %}disabled
                         {% endif %}
-                        >Ajouter
+                >Ajouter
                 </button>
             </div>
         </div>
@@ -161,7 +184,7 @@
     {% endfor %}
 
     <style>
-        .center-comment{
+        .center-comment {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -179,6 +202,8 @@
     let startSecondHalfUrl = "{% url 'arbitreStartSecondHalf' game_id=game.id %}"
     let finishGameUrl = "{% url 'arbitreFinishGame' game_id=game.id %}"
     let addCommentUrl = "{% url 'arbitreAddComment' game_id=game.id %}"
+    let addHomeTeamGoalUrl = href = "{% url 'arbitreAddGoal' game_id=game.id team=0 %}"
+    let addAwayTeamGoalUrl = href = "{% url 'arbitreAddGoal' game_id=game.id team=1 %}"
     console.log(startGameUrl)
     let counter = {{ counter }};
     let live ={% if game.live %} true {% else %} false{% endif %}
@@ -266,6 +291,18 @@
                 window.location.reload()
             })
         }
+    }
+
+    function addGoal(team) {
+        let url = addHomeTeamGoalUrl
+        if (team === 1) {
+            url = addAwayTeamGoalUrl
+        }
+        axios.post(url, {}).then(
+            (response) => {
+                window.location.reload()
+            }
+        )
     }
 
 

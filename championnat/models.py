@@ -5,13 +5,14 @@ from uuid import uuid4
 from django.contrib.auth.models import User
 from django.core.exceptions import BadRequest
 from django.db import models
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, post_save
 from django.urls import reverse
 from django.utils.deconstruct import deconstructible
 from django.utils.html import mark_safe
 
 from backend_TGL.settings import STATIC_PATH
 from .helper import get_now
+from .helper import reset_teams
 
 
 class League(models.Model):
@@ -140,62 +141,62 @@ def update_team_points(sender, instance, **kwargs):
     if instance.league != instance.awayTeam.league:
         raise Exception('awayTeam League is not the same as the Game League')
 
-    if not instance.updateTeamPoints:
-        return
-
-    preSaveGame = None
-    try:
-        preSaveGame = Game.objects.get(id=instance.id)
-    except Game.DoesNotExist:
-        # new object
-        pass
-
-    if preSaveGame:
-        if preSaveGame.homeTeamScore > preSaveGame.awayTeamScore:
-            instance.homeTeam.points -= 3
-            instance.homeTeam.victoires -= 1
-            instance.awayTeam.pertes -= 1
-        elif preSaveGame.homeTeamScore < preSaveGame.awayTeamScore:
-            instance.awayTeam.points -= 3
-            instance.homeTeam.pertes -= 1
-            instance.awayTeam.victoires -= 1
-        elif preSaveGame.homeTeamScore == preSaveGame.awayTeamScore:
-            instance.homeTeam.points -= 1
-            instance.awayTeam.points -= 1
-            instance.homeTeam.nulles -= 1
-            instance.awayTeam.nulles -= 1
-        instance.homeTeam.buts_marque -= preSaveGame.homeTeamScore
-        instance.homeTeam.buts_encaisse -= preSaveGame.awayTeamScore
-        instance.awayTeam.buts_marque -= preSaveGame.awayTeamScore
-        instance.awayTeam.buts_encaisse -= preSaveGame.homeTeamScore
-
-    if instance.homeTeamScore > instance.awayTeamScore:
-        instance.homeTeam.points += 3
-        instance.homeTeam.victoires += 1
-        instance.awayTeam.pertes += 1
-    elif instance.homeTeamScore < instance.awayTeamScore:
-        instance.awayTeam.points += 3
-        instance.homeTeam.pertes += 1
-        instance.awayTeam.victoires += 1
-    elif instance.homeTeamScore == instance.awayTeamScore:
-        instance.homeTeam.points += 1
-        instance.awayTeam.points += 1
-        instance.homeTeam.nulles += 1
-        instance.awayTeam.nulles += 1
-
-    instance.homeTeam.buts_marque += instance.homeTeamScore
-    instance.homeTeam.buts_encaisse += instance.awayTeamScore
-    instance.awayTeam.buts_marque += instance.awayTeamScore
-    instance.awayTeam.buts_encaisse += instance.homeTeamScore
-    print('2here')
-
-    instance.homeTeam.save()
-    instance.awayTeam.save()
+    # if not instance.finished:
+    #     return
+    #
+    # preSaveGame = None
+    # try:
+    #     preSaveGame = Game.objects.get(id=instance.id)
+    # except Game.DoesNotExist:
+    #     # new object
+    #     pass
+    #
+    # if preSaveGame:
+    #     if preSaveGame.homeTeamScore > preSaveGame.awayTeamScore:
+    #         instance.homeTeam.points -= 3
+    #         instance.homeTeam.victoires -= 1
+    #         instance.awayTeam.pertes -= 1
+    #     elif preSaveGame.homeTeamScore < preSaveGame.awayTeamScore:
+    #         instance.awayTeam.points -= 3
+    #         instance.homeTeam.pertes -= 1
+    #         instance.awayTeam.victoires -= 1
+    #     elif preSaveGame.homeTeamScore == preSaveGame.awayTeamScore:
+    #         instance.homeTeam.points -= 1
+    #         instance.awayTeam.points -= 1
+    #         instance.homeTeam.nulles -= 1
+    #         instance.awayTeam.nulles -= 1
+    #     instance.homeTeam.buts_marque -= preSaveGame.homeTeamScore
+    #     instance.homeTeam.buts_encaisse -= preSaveGame.awayTeamScore
+    #     instance.awayTeam.buts_marque -= preSaveGame.awayTeamScore
+    #     instance.awayTeam.buts_encaisse -= preSaveGame.homeTeamScore
+    #
+    # if instance.homeTeamScore > instance.awayTeamScore:
+    #     instance.homeTeam.points += 3
+    #     instance.homeTeam.victoires += 1
+    #     instance.awayTeam.pertes += 1
+    # elif instance.homeTeamScore < instance.awayTeamScore:
+    #     instance.awayTeam.points += 3
+    #     instance.homeTeam.pertes += 1
+    #     instance.awayTeam.victoires += 1
+    # elif instance.homeTeamScore == instance.awayTeamScore:
+    #     instance.homeTeam.points += 1
+    #     instance.awayTeam.points += 1
+    #     instance.homeTeam.nulles += 1
+    #     instance.awayTeam.nulles += 1
+    #
+    # instance.homeTeam.buts_marque += instance.homeTeamScore
+    # instance.homeTeam.buts_encaisse += instance.awayTeamScore
+    # instance.awayTeam.buts_marque += instance.awayTeamScore
+    # instance.awayTeam.buts_encaisse += instance.homeTeamScore
+    # print('2here')
+    #
+    # instance.homeTeam.save()
+    # instance.awayTeam.save()
 
 
 def update_player_info(sender, instance, **kwargs):
-    if instance.player.team_id!=instance.game.homeTeam_id and\
-            instance.player.team_id!=instance.game.awayTeam_id:
+    if instance.player.team_id != instance.game.homeTeam_id and \
+            instance.player.team_id != instance.game.awayTeam_id:
         raise BadRequest('joueur n\'est pas dans les \'equipes du jeu')
 
     preSaveComment = None
@@ -222,5 +223,12 @@ def update_player_info(sender, instance, **kwargs):
     instance.player.save()
 
 
+def post_update_team_points(sender, instance, **kwargs):
+    if not instance.updateTeamPoints:
+        return
+    reset_teams()
+
+
 pre_save.connect(update_team_points, sender=Game)
 pre_save.connect(update_player_info, sender=GameComment)
+post_save.connect(post_update_team_points, sender=Game)

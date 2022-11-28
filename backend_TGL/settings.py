@@ -25,9 +25,9 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: keep the secret key used in production secret!
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 # blog_project/settings.py
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_PATH = 'static'
 STATIC_ROOT = "prod-static"
+STATICFILES_DIRS = [os.path.join(BASE_DIR, STATIC_PATH)]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 

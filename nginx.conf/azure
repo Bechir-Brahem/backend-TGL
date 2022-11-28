@@ -12,6 +12,6 @@ server {
   }
 location /static {
     autoindex on;
-    alias /home/bb/backend-TGL/prod-static/;
+    alias /home/bb/backend-TGL/static/;
   }
 }

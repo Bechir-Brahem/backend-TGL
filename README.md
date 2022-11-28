@@ -44,6 +44,7 @@ ln -s ../sites-available/azure .
 
 cd /home/bb/backend-TGL
 python manage.py collectstatic
+# rm -r static , mv prod-static static
 systemctl restart nginx
 # http server with static files should be running
 

@@ -1,6 +1,6 @@
 from django.http import Http404
 
-from .models import Game, League, Player, Team
+from .models import Game, League, Player, Team, GameComment
 
 
 def leagues():
@@ -57,3 +57,5 @@ def players_per_team(team):
 
 def players_per_league(league):
     return Player.objects.filter(team__league__name=league)
+
+

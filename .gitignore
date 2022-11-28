@@ -2,8 +2,9 @@
 static
 db.sqlite3
 counter.txt
-prod-static/*.jpg
-prod-static/*.png
+prod-static
+**/__pycache__
+*/__pycache__
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

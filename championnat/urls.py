@@ -3,11 +3,12 @@ from django.urls import path
 from .views import liveActivity, \
     leagueActivity, teamsPerDivision, leaguesView, playersView, \
     commentsPerGame, gamesPerTeam, gamePerId, arbitreView, startGame, \
-    finishFirstHalf, startSecondHalf, finishGame, addComment, incrementPoints, resetTeams, incrementCounter
+    finishFirstHalf, startSecondHalf, finishGame, addComment, incrementPoints, resetTeamsView, incrementCounter,\
+    addGoal
 
 urlpatterns = [
     path('config/incrementPoints', incrementPoints, name='config/incrementPoints'),
-    path('config/reset', resetTeams, name='config/reset'),
+    path('config/reset', resetTeamsView, name='config/reset'),
     path('config/incrementCounter', incrementCounter, name='config/incrementCounter'),
     path('live', liveActivity, name='live'),
     path('league', leagueActivity, name='league'),
@@ -22,5 +23,6 @@ urlpatterns = [
     path('arbitre/<int:game_id>/finishFirstHalf', finishFirstHalf, name="arbitreFinishFirstHalf"),
     path('arbitre/<int:game_id>/startSecondHalf', startSecondHalf, name="arbitreStartSecondHalf"),
     path('arbitre/<int:game_id>/finishGame', finishGame, name="arbitreFinishGame"),
-    path('arbitre/<int:game_id>/addComment', addComment, name="arbitreAddComment")
+    path('arbitre/<int:game_id>/addComment', addComment, name="arbitreAddComment"),
+    path('arbitre/<int:game_id>/addGoal/<int:team>', addGoal,name="arbitreAddGoal")
 ]
